@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include "ExceptionsHandler.h"
 
 int getInt(int *var) {
-    int res = scanf("%d",  var);
+    int clearBuffer, res = scanf("%d", var);
+    while ((clearBuffer = getchar()) != '\n' && clearBuffer != EOF) {}
     return res;
 }
 
@@ -10,18 +12,20 @@ int selectOperation(const char *commandsMessages[], int countOfMessages) {
     int userInput, i, res;
 
     do {
+        puts(" ");
         puts(repeatMessage);
         for (i = 0; i < countOfMessages; ++i) puts(commandsMessages[i]);
-        puts("Make your choice: --> ");
+        puts("\nSelect one command out of given:");
         res = getInt(&userInput);
         if (res == 0) {
-            // Error: input value isn't an integer
-            //TODO: handle error
+            throughException(NOT_INT_VALUE);
+        } else if (userInput >= countOfMessages || userInput <= 0) {
+            throughException(INPUT_NOT_IN_RANGE);
         } else if (res == EOF) {
             // TODO: Exit program
             return 0;
         }
         repeatMessage = "Please, repeat input!";
-    } while (res <= 0 || userInput >= countOfMessages);
-    return userInput;
+    } while (res <= 0 || userInput >= countOfMessages || userInput <= 0);
+    return userInput - 1;
 }

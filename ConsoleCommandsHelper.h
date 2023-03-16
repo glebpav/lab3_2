@@ -4,6 +4,8 @@
 // TODO: implement preprocessing for locale/external table
 #include "localeTable/TableHelper.h"
 
+int exitProgram(Table *table);
+
 int addElement(Table *inputTable);
 
 int findElementByKey(Table *inputTable);

@@ -3,10 +3,13 @@
 #include "ConsoleCommandsHelper.h"
 
 int main() {
+    Table table = initTable();
+    int operation;
 
+    do {
+        operation = selectOperation(commandsMessages, countOfCommands);
+        commandsPointers[operation](&table);
+    } while (operation);
 
-    Table table;
-    int operation = selectOperation(commandsMessages, countOfCommands);
-    commandsPointers[operation](&table);
     return 0;
 }

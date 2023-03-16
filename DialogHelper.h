@@ -16,7 +16,7 @@ const char *commandsMessages[] = {
 };
 
 int (*commandsPointers[])(Table *) = {
-        NULL,
+        exitProgram,
         addElement,
         findElementByKey,
         findElementByKeyAndVersion,

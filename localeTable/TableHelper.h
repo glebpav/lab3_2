@@ -1,6 +1,8 @@
 #ifndef LAB3_2_TABLEHELPER_H
 #define LAB3_2_TABLEHELPER_H
 
+#include <stdio.h>
+
 typedef struct KeySpace {
     int key;
     int release;
@@ -13,5 +15,6 @@ typedef struct Table {
     int tableLen;
 } Table;
 
+Table initTable();
 
 #endif //LAB3_2_TABLEHELPER_H
