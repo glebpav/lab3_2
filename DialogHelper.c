@@ -1,18 +1,27 @@
 #include <stdio.h>
-#include "DialogHelper.h"
 
-int selectOperation(char **commandsMessages, int countOfMessages) {
+int getInt(int *var) {
+    int res = scanf("%d",  var);
+    return res;
+}
 
-    char *errmsg = "";
-    int rc;
-    int i, n;
+int selectOperation(const char *commandsMessages[], int countOfMessages) {
+    char *repeatMessage = "";
+    int userInput, i, res;
 
     do {
-        puts(errmsg);
-        errmsg = "You are wrong. Repeat, please!";
+        puts(repeatMessage);
         for (i = 0; i < countOfMessages; ++i) puts(commandsMessages[i]);
         puts("Make your choice: --> ");
-        n = getInt(&rc);
-        if (n == 0) rc = 0;
-    } while (rc < 0 || rc >= commandsMessages);
+        res = getInt(&userInput);
+        if (res == 0) {
+            // Error: input value isn't an integer
+            //TODO: handle error
+        } else if (res == EOF) {
+            // TODO: Exit program
+            return 0;
+        }
+        repeatMessage = "Please, repeat input!";
+    } while (res <= 0 || userInput >= countOfMessages);
+    return userInput;
 }

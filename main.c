@@ -1,6 +1,12 @@
 #include <stdio.h>
+#include "DialogHelper.h"
+#include "ConsoleCommandsHelper.h"
 
 int main() {
-    printf("Hello, World!\n");
+
+
+    Table table;
+    int operation = selectOperation(commandsMessages, countOfCommands);
+    commandsPointers[operation](&table);
     return 0;
 }
