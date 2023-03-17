@@ -6,7 +6,8 @@ typedef enum ExceptionsTypes {
     INPUT_NOT_IN_RANGE,
     TABLE_OVERFLOW,
     NO_SUCH_FILE,
-    INCORRECT_FILE_FORMAT
+    INCORRECT_FILE_FORMAT,
+    UNKNOWN_KEY
 } ExceptionsTypes;
 
 char *getExceptionMessage(ExceptionsTypes exceptionType);

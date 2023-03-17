@@ -10,6 +10,7 @@ char *getExceptionMessage(ExceptionsTypes exceptionType) {
         case TABLE_OVERFLOW: return strdup("table is overflow, clear it first");
         case NO_SUCH_FILE: return strdup("no such file");
         case INCORRECT_FILE_FORMAT: return strdup("file format is incorrect");
+        case UNKNOWN_KEY: return strdup("given key or version doesn't exist");
         default: return strdup("unknown error");
     }
 }

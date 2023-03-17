@@ -54,18 +54,23 @@ int findElementByKeyAndVersion(Table *inputTable) {
     if (!getSaveIntValue(&version, "Please, input VERSION\n")) return exitProgram(inputTable);
 
     Table newTable = initTable();
-    findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
+    int res = findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
     printTable(&newTable);
+    if (res) freeTable(&newTable);
 }
 
 int deleteElementByKey(Table *inputTable) {
     int key;
     if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
-    deleteElement(inputTable, key);
+    if (!deleteElement(inputTable, key)) throughException(UNKNOWN_KEY);
+    return 1;
 }
 
 int deleteOldVersionsWithKey(Table *inputTable) {
-    return 0;
+    int key;
+    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
+    if (!updateElementsWithKey(inputTable, key)) throughException(UNKNOWN_KEY);
+    return 1;
 }
 
 int printTable(Table *table) {
@@ -90,8 +95,9 @@ int findElementByKey(Table *inputTable) {
     if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
 
     Table newTable = initTable();
-    findRowsWithKey(inputTable, key, &newTable);
+    int res = findRowsWithKey(inputTable, key, &newTable);
     printTable(&newTable);
+    if(res) freeTable(&newTable);
     return 1;
 }
 
@@ -101,9 +107,9 @@ int readTableFromFile(Table *table) {
     int res = scanf("%s", fileName);
     printf("fileName: %s\n", fileName);
     if (res == EOF) return exitProgram(table);
-    char *wordsArray = NULL;
-    if (readFile(fileName, &wordsArray)) {
-        getTableFromString(wordsArray, table);
+    char *fileSting = NULL;
+    if (readFile(fileName, &fileSting)) {
+        getTableFromString(fileSting, table);
     }
     return 1;
 

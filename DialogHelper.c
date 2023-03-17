@@ -5,6 +5,7 @@
 
 int selectOperation(const char *commandsMessages[], int countOfMessages) {
     int userInput;
+    printf("\n");
     for (int i = 0; i < countOfMessages; ++i) printf("%s\n", commandsMessages[i]);
     printf("Select one command out of given:\n");
     do {

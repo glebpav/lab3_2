@@ -1,7 +1,7 @@
 #include "FileHelper.h"
 #include "localeTable/TableHelper.h"
-#include <errno.h>
 #include "stdio.h"
+#include "errno.h"
 
 int isDigit(char *text) {
     int j;
@@ -37,7 +37,7 @@ int readFile(char *fileName, char **outputString) {
 
         int ret = fscanf(fp, "%s", item);
         if (ret == 1) {
-            printf("item with len %llu is: %s\n", strlen(item), item);
+            // printf("item with len %llu is: %s\n", strlen(item), item);
             *outputString = realloc(*outputString, (1 + lineSize + strlen(item)) * sizeof(char));
             *outputString = strcat(*outputString, item);
             lineSize = strlen(*outputString);
@@ -59,12 +59,11 @@ int readFile(char *fileName, char **outputString) {
 }
 
 int getTableFromString(char *inputString, Table *table) {
-    char *strDup = strdup(inputString);
-    char *strBuf = strtok(strDup, ";");
+    char *strBuf = strtok(inputString, ";");
     char **linesArray = NULL;
     int countOfLines = 0;
     while (strBuf != NULL) {
-        printf("line of content is: %s\n", strBuf);
+        // printf("line of content is: %s\n", strBuf);
         linesArray = realloc(linesArray, (countOfLines + 1) * sizeof(char *));
         linesArray[countOfLines] = strdup(strBuf);
         countOfLines += 1;
@@ -78,9 +77,12 @@ int getTableFromString(char *inputString, Table *table) {
         int columnCounter;
         columnCounter = 0;
         while (strBuf != NULL) {
-            printf("col count %d, value %s\n", columnCounter, strBuf);
+            // printf("col count %d, value %s\n", columnCounter, strBuf);
             if (!isDigit(strBuf) || strcmp("", strBuf) == 0) {
                 throughException(INCORRECT_FILE_FORMAT);
+                for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
+                free(linesArray);
+                free(inputString);
                 return 0;
             }
             switch (columnCounter) {
@@ -98,6 +100,9 @@ int getTableFromString(char *inputString, Table *table) {
                 }
                 default: {
                     throughException(INCORRECT_FILE_FORMAT);
+                    for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
+                    free(linesArray);
+                    free(inputString);
                     return 0;
                 }
             }
@@ -106,10 +111,17 @@ int getTableFromString(char *inputString, Table *table) {
         }
         if (columnCounter > 3) {
             throughException(INCORRECT_FILE_FORMAT);
+            for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
+            free(linesArray);
+            free(inputString);
             return 0;
         }
         inputNewRow(table, row.key, row.data);
-
     }
 
+    for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
+    free(linesArray);
+    free(inputString);
+
+    return 1;
 }
