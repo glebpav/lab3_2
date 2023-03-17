@@ -11,8 +11,9 @@ const char *commandsMessages[] = {
         "3. Find element(s) by KEY",
         "4. Find element by KEY and VERSION (*)",
         "5. Delete element by KEY",
-        "6. Print all table",
-        "7. Delete old versions of elements with KEY (*)"
+        "6. Delete old versions of elements with KEY (*)",
+        "7. Print all table",
+        "8. Read table from file"
 };
 
 int (*commandsPointers[])(Table *) = {
@@ -21,12 +22,13 @@ int (*commandsPointers[])(Table *) = {
         findElementByKey,
         findElementByKeyAndVersion,
         deleteElementByKey,
-        deleteOldVersionsWithKey
+        deleteOldVersionsWithKey,
+        printTable,
+        readTableFromFile
 };
 
 const int countOfCommands = sizeof(commandsMessages) / sizeof(commandsMessages[0]);
 
 int selectOperation(const char *commandsMessages[], int countOfMessages);
-int getInt(int *var);
 
 #endif //LAB3_2_DIALOGHELPER_H

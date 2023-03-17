@@ -1,14 +1,21 @@
+#include <stdlib.h>
+#include <string.h>
 #include "ExceptionsHandler.h"
 #include "stdio.h"
 
-void throughException(ExceptionsTypes exceptionType) {
+char *getExceptionMessage(ExceptionsTypes exceptionType) {
     switch (exceptionType) {
-        case NOT_INT_VALUE: {
-            printf("%s\n", "ERROR: given input is not integer");
-            break;
-        }
-        case INPUT_NOT_IN_RANGE: {
-            printf("%s\n", "ERROR: input value is not int given range");
-        }
+        case NOT_INT_VALUE: return strdup("given input is not integer");
+        case INPUT_NOT_IN_RANGE: return strdup("input value is not int given range");
+        case TABLE_OVERFLOW: return strdup("table is overflow, clear it first");
+        case NO_SUCH_FILE: return strdup("no such file");
+        case INCORRECT_FILE_FORMAT: return strdup("file format is incorrect");
+        default: return strdup("unknown error");
     }
+}
+
+void throughException(ExceptionsTypes exceptionType) {
+    char* errorMessage = getExceptionMessage(exceptionType);
+    printf("ERROR: %s\n", errorMessage);
+    free(errorMessage);
 }

@@ -2,31 +2,109 @@
 #include "string.h"
 #include "stdlib.h"
 #include "ConsoleCommandsHelper.h"
+#include "ExceptionsHandler.h"
+#include "FileHelper.h"
 
 // Why you cannot return fixed size / const array in C?
 // https://stackoverflow.com/questions/29088462/why-you-cannot-return-fixed-size-const-array-in-c
 
-int exitProgram(Table *table) {
-    if (table->keySpace != NULL) free(table);
-    printf("%s\n", "Goodbye, dear!");
+int getInt(int *var) {
+    int clearBuffer, res = scanf("%d", var);
+    while ((clearBuffer = getchar()) != '\n' && clearBuffer != EOF) {}
+    return res;
 }
 
-int findElementByKey(Table *inputTable) {
-    printf("hereeeee");
+int getSaveIntValue(int *value, char *messageToUser) {
+
+    printf("%s", messageToUser);
+    // char *repeatMessage = "";
+    int res;
+    do {
+        // puts(repeatMessage);
+        res = getInt(value);
+        if (res == 0) {
+            throughException(NOT_INT_VALUE);
+        } else if (res == EOF) {
+            return 0;
+        }
+        // repeatMessage = "Please, repeat input!";
+    } while (res <= 0);
+    return res;
+}
+
+int exitProgram(Table *table) {
+    freeTable(table);
+    printf("%s\n", "Goodbye, dear!");
+    return 0;
 }
 
 int addElement(Table *inputTable) {
-    return 0;
+
+    int newKey, newValue;
+    if (!getSaveIntValue(&newKey, "Please, input new KEY\n")) return exitProgram(inputTable);
+    if (!getSaveIntValue(&newValue, "Please, input new VALUE\n")) return exitProgram(inputTable);
+
+    inputNewRow(inputTable, newKey, newValue);
+    return 1;
 }
 
 int findElementByKeyAndVersion(Table *inputTable) {
-    return 0;
+    int key, version;
+    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
+    if (!getSaveIntValue(&version, "Please, input VERSION\n")) return exitProgram(inputTable);
+
+    Table newTable = initTable();
+    findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
+    printTable(&newTable);
 }
 
 int deleteElementByKey(Table *inputTable) {
-    return 0;
+    int key;
+    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
+    deleteElement(inputTable, key);
 }
 
 int deleteOldVersionsWithKey(Table *inputTable) {
     return 0;
+}
+
+int printTable(Table *table) {
+
+    if(table->tableSize == 0) {
+        printf("Table is empty\n");
+        return 1;
+    }
+
+    printf("\nCurren state of table:\n");
+    printf("______________________\n");
+    for (int i = 0; i < table->tableSize; ++i) {
+        KeySpace item = table->keySpace[i];
+        printf("| %.*d | %.*d | %.*d |\n", 4, item.key, 4, item.release, 4, item.data);
+    }
+    printf("----------------------\n");
+    return 1;
+}
+
+int findElementByKey(Table *inputTable) {
+    int key;
+    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
+
+    Table newTable = initTable();
+    findRowsWithKey(inputTable, key, &newTable);
+    printTable(&newTable);
+    return 1;
+}
+
+int readTableFromFile(Table *table) {
+    char fileName[80];
+    printf("Please, input file name:\n");
+    int res = scanf("%s", fileName);
+    printf("fileName: %s\n", fileName);
+    if (res == EOF) return exitProgram(table);
+    char *wordsArray = NULL;
+    if (readFile(fileName, &wordsArray)) {
+        getTableFromString(wordsArray, table);
+    }
+    return 1;
+
 }
