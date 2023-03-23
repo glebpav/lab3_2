@@ -16,7 +16,7 @@ int findElementByKey(Table *inputTable);
 
 int findElementByKeyAndVersion(Table *inputTable);
 
-int deleteElementByKey(Table *inputTable);
+int deleteElement(Table *inputTable);
 
 int deleteOldVersionsWithKey(Table *inputTable);
 

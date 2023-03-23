@@ -1,6 +1,7 @@
 #include "TableHelper.h"
 #include "../FileHelper.h"
 
+
 Table initTable(FILE *file) {
     Table table = {NULL, 128, 0, file};
     return table;
@@ -56,7 +57,7 @@ int findRowsWithKeyAndVersion(Table *inputTable, int key, int version, Table *ou
     return 1;
 }
 
-int deleteElement(Table *table, int key) {
+int deleteElementByKey(Table *table, int key) {
     int count = 0;
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];

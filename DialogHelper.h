@@ -21,7 +21,7 @@ int (*commandsPointers[])(Table *) = {
         addElement,
         findElementByKey,
         findElementByKeyAndVersion,
-        deleteElementByKey,
+        deleteElement,
         deleteOldVersionsWithKey,
         printTable,
         readTableFromFile

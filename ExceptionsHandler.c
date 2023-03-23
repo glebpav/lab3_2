@@ -17,6 +17,8 @@ char *getExceptionMessage(ExceptionsTypes exceptionType) {
 
 void throughException(ExceptionsTypes exceptionType) {
     char* errorMessage = getExceptionMessage(exceptionType);
+    printf("\033[1;31m");
     printf("ERROR: %s\n", errorMessage);
+    printf("\033[0m");
     free(errorMessage);
 }

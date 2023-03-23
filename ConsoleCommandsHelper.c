@@ -59,34 +59,40 @@ int findElementByKeyAndVersion(Table *inputTable) {
     if (res) freeTable(&newTable);
 }
 
-int deleteElementByKey(Table *inputTable) {
+int deleteElement(Table *inputTable) {
     int key;
-    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
-    if (!deleteElement(inputTable, key)) throughException(UNKNOWN_KEY);
+    if (!getSaveIntValue(&key, "Please, input KEY\n"))
+        return exitProgram(inputTable);
+    if (!deleteElementByKey(inputTable, key))
+        throughException(UNKNOWN_KEY);
     return 1;
 }
 
 int deleteOldVersionsWithKey(Table *inputTable) {
     int key;
-    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
-    if (!updateElementsWithKey(inputTable, key)) throughException(UNKNOWN_KEY);
+    if (!getSaveIntValue(&key, "Please, input KEY\n"))
+        return exitProgram(inputTable);
+    if (!updateElementsWithKey(inputTable, key))
+        throughException(UNKNOWN_KEY);
     return 1;
 }
 
 int printTable(Table *table) {
 
-    if(table->tableSize == 0) {
+    if (table->tableSize == 0) {
         printf("Table is empty\n");
         return 1;
     }
 
     printf("\nCurren state of table:\n");
-    printf("______________________\n");
+    printf("┌──────────────────────┐\n");
+    printf("│ %s │ %s │ %s │\n", "KEY","RELEASE", "DATA");
+    printf("│─────┼─────────┼──────│\n");
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];
-        printf("| %.*d | %.*d | %.*d |\n", 4, item.key, 4, item.release, 4, item.data);
+        printf("│ %.*d │ %.*d │ %.*d │\n", 3, item.key, 7, item.release, 4, item.info->data);
     }
-    printf("----------------------\n");
+    printf("└──────────────────────┘\n");
     return 1;
 }
 
@@ -97,7 +103,7 @@ int findElementByKey(Table *inputTable) {
     Table newTable = initTable();
     int res = findRowsWithKey(inputTable, key, &newTable);
     printTable(&newTable);
-    if(res) freeTable(&newTable);
+    if (res) freeTable(&newTable);
     return 1;
 }
 

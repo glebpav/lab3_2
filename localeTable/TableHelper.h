@@ -3,10 +3,14 @@
 
 #include <stdio.h>
 
+typedef struct Item {
+    int data;
+} Item;
+
 typedef struct KeySpace {
     int key;
     int release;
-    int data;
+    Item *info;
 } KeySpace;
 
 typedef struct Table {
@@ -17,11 +21,20 @@ typedef struct Table {
 
 Table initTable();
 
+KeySpace initRow();
+
 void freeTable(Table *table);
+
 int inputNewRow(Table *table, int key, int value);
+
 int findRowsWithKey(Table *inputTable, int key, Table *outTable);
+
 int findRowsWithKeyAndVersion(Table *inputTable, int key, int version, Table *newTable);
-int deleteElement(Table *table, int key);
+
+int deleteElementByKey(Table *table, int key);
+
+int deleteElementByKeyAndVersion(Table *table, int key, int version);
+
 int updateElementsWithKey(Table *table, int key);
 
 #endif //LAB3_2_TABLEHELPER_H

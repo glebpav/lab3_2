@@ -71,7 +71,8 @@ int getTableFromString(char *inputString, Table *table) {
     }
     freeTable(table);
     *table = initTable();
-    KeySpace row = {0, 0, 0};
+    int key, release, data;
+
     for (int i = 0; i < countOfLines; i++) {
         strBuf = strtok(linesArray[i], ",");
         int columnCounter;
@@ -87,15 +88,15 @@ int getTableFromString(char *inputString, Table *table) {
             }
             switch (columnCounter) {
                 case 0: {
-                    row.key = atoi(strBuf);
+                    key = atoi(strBuf);
                     break;
                 }
                 case 1: {
-                    row.release = atoi(strBuf);
+                    release = atoi(strBuf);
                     break;
                 }
                 case 2: {
-                    row.data = atoi(strBuf);
+                    data = atoi(strBuf);
                     break;
                 }
                 default: {
@@ -116,7 +117,8 @@ int getTableFromString(char *inputString, Table *table) {
             free(inputString);
             return 0;
         }
-        inputNewRow(table, row.key, row.data);
+
+        inputNewRow(table, key, data);
     }
 
     for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
