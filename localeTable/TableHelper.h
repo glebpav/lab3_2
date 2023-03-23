@@ -2,6 +2,7 @@
 #define LAB3_2_TABLEHELPER_H
 
 #include <stdio.h>
+#define MAX_TABLE_SIZE 64
 
 typedef struct Item {
     int data;
@@ -19,7 +20,7 @@ typedef struct Table {
     int tableSize;
 } Table;
 
-Table initTable();
+Table initTable(const int size);
 
 KeySpace initRow();
 

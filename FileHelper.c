@@ -70,7 +70,7 @@ int getTableFromString(char *inputString, Table *table) {
         strBuf = strtok(NULL, ";");
     }
     freeTable(table);
-    *table = initTable();
+    *table = initTable(MAX_TABLE_SIZE);
     int key, release, data;
 
     for (int i = 0; i < countOfLines; i++) {

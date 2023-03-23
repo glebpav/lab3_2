@@ -5,7 +5,7 @@
 // gcc main.c -o main ConsoleCommandsHelper.c DialogHelper.c ExceptionsHandler.c FileHelper.c localeTable/TableHelper.c
 
 int main() {
-    Table table = initTable(64);
+    Table table = initTable(MAX_TABLE_SIZE);
     int operation, operationResponse;
 
     do {

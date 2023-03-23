@@ -50,10 +50,12 @@ int addElement(Table *inputTable) {
 
 int findElementByKeyAndVersion(Table *inputTable) {
     int key, version;
-    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
-    if (!getSaveIntValue(&version, "Please, input VERSION\n")) return exitProgram(inputTable);
+    if (!getSaveIntValue(&key, "Please, input KEY\n"))
+        return exitProgram(inputTable);
+    if (!getSaveIntValue(&version, "Please, input VERSION\n"))
+        return exitProgram(inputTable);
 
-    Table newTable = initTable();
+    Table newTable = initTable(MAX_TABLE_SIZE);
     int res = findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
     printTable(&newTable);
     if (res) freeTable(&newTable);
@@ -98,9 +100,10 @@ int printTable(Table *table) {
 
 int findElementByKey(Table *inputTable) {
     int key;
-    if (!getSaveIntValue(&key, "Please, input KEY\n")) return exitProgram(inputTable);
+    if (!getSaveIntValue(&key, "Please, input KEY\n"))
+        return exitProgram(inputTable);
 
-    Table newTable = initTable();
+    Table newTable = initTable(MAX_TABLE_SIZE);
     int res = findRowsWithKey(inputTable, key, &newTable);
     printTable(&newTable);
     if (res) freeTable(&newTable);

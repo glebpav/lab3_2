@@ -2,8 +2,8 @@
 #include "TableHelper.h"
 #include "../ExceptionsHandler.h"
 
-Table initTable() {
-    Table table = {NULL, 128, 0};
+Table initTable(const int size) {
+    Table table = {NULL, size, 0};
     return table;
 }
 
