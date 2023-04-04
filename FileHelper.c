@@ -1,5 +1,4 @@
 #include "FileHelper.h"
-#include "localeTable/TableHelper.h"
 #include "stdio.h"
 #include "errno.h"
 
@@ -70,7 +69,7 @@ int getTableFromString(char *inputString, Table *table) {
         strBuf = strtok(NULL, ";");
     }
     freeTable(table);
-    *table = initTable(MAX_TABLE_SIZE);
+    *table = initLocaleTable(MAX_TABLE_SIZE);
     int key, release, data;
 
     for (int i = 0; i < countOfLines; i++) {

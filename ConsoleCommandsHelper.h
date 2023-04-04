@@ -1,10 +1,15 @@
 #ifndef LAB3_2_CONSOLECOMMANDSHELPER_H
 #define LAB3_2_CONSOLECOMMANDSHELPER_H
 
-// TODO: implement preprocessing for locale/external table
-#include "localeTable/TableHelper.h"
+#ifdef B
+#include "externalTable/TableHelper.h"
+#else
+#include "externalTable//TableHelper.h"
+#endif
 
 int getSaveIntValue(int *value, char *messageToUser);
+
+int getSaveStingValue(char **value);
 
 int getInt(int *var);
 

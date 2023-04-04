@@ -107,6 +107,18 @@ int updateElementsWithKey(Table *table, int key) {
 }
 
 
+int insert(Table *table, int key, int version, int data) {
+    // if(find(*table, k) >= 0) return 1;
+    if (table->tableSize >= table->maxTableSize) return 2;
+    table->keySpace[table->tableSize].key = key;
+    table->keySpace[table->tableSize].release = version;
+    fseek(table->file, 0, SEEK_END);
+    table->keySpace[table->tableSize].offset = ftell(table->file);
+    fwrite(data, sizeof(char), table->keySpace[table->tableSize].len, table->file);
+    ++(table->tableSize);
+    return 0;
+}
+
 int loadTable(Table *table, char *fileName) {
     fopen_s(&(table->file), fileName, "r+b");
     if (table->file == NULL)
@@ -118,23 +130,19 @@ int loadTable(Table *table, char *fileName) {
     return 1;
 }
 
-int createFile(Table *table, char *fileName, int maxTableSize)
-{
-    table->maxTableSize = maxTableSize;
-    table->tableSize = 0;
-    if (fopen_s(&(table->file), fileName, "w+b") != 0){
+int createFile(Table *table, char *fileName) {
+    if (fopen_s(&(table->file), fileName, "w+b") != 0) {
         table->keySpace = NULL;
-        return 0;
+        return -1;
     }
-    table->keySpace = (KeySpace *)calloc(table->maxTableSize, sizeof(KeySpace));
+    table->keySpace = (KeySpace *) calloc(table->maxTableSize, sizeof(KeySpace));
     fwrite(&table->maxTableSize, sizeof(int), 1, table->file);
     fwrite(&table->tableSize, sizeof(int), 1, table->file);
     fwrite(table->keySpace, sizeof(KeySpace), table->maxTableSize, table->file);
     return 1;
 }
 
-int saveTable(Table *table)
-{
+int saveTable(Table *table) {
     fseek(table->file, sizeof(int), SEEK_SET);
     fwrite(&table->tableSize, sizeof(int), 1, table->file);
     fwrite(table->keySpace, sizeof(KeySpace), table->tableSize, table->file);

@@ -3,10 +3,15 @@
 
 #include <stdio.h>
 
+typedef struct Item {
+    int data;
+} Item;
+
 typedef struct KeySpace {
     int key;
     int release;
-    int data;
+    int offset;
+    Item *info;
 } KeySpace;
 
 typedef struct Table {
@@ -26,7 +31,7 @@ int deleteElementByKey(Table *table, int key);
 int updateElementsWithKey(Table *table, int key);
 
 int loadTable(Table *table, char *fileName);
-int createFile(Table *table, char *fileName, int maxTableSize);
+int createFile(Table *table, char *fileName);
 int saveTable(Table *table);
 
 #endif //LAB3_2_TABLEHELPER_H

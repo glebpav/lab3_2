@@ -1,8 +1,7 @@
 #ifndef LAB3_2_DIALOGHELPER_H
 #define LAB3_2_DIALOGHELPER_H
 
-// TODO: make preprocessing for locale/external table lib
-#include "localeTable/TableHelper.h"
+#include "externalTable/TableHelper.h"
 #include "ConsoleCommandsHelper.h"
 
 const char *commandsMessages[] = {
@@ -13,7 +12,6 @@ const char *commandsMessages[] = {
         "5. Delete element by KEY",
         "6. Delete old versions of elements with KEY (*)",
         "7. Print all table",
-        "8. Read table from file"
 };
 
 int (*commandsPointers[])(Table *) = {
@@ -28,6 +26,8 @@ int (*commandsPointers[])(Table *) = {
 };
 
 const int countOfCommands = sizeof(commandsMessages) / sizeof(commandsMessages[0]);
+
+int presettingProgram(Table *table);
 
 int selectOperation(const char *commandsMessages[], int countOfMessages);
 

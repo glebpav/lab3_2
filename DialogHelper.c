@@ -1,7 +1,36 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <malloc.h>
 #include "ExceptionsHandler.h"
 #include "ConsoleCommandsHelper.h"
+#include "externalTable/TableHelper.h"
 
+
+int presettingProgram(Table *table) {
+
+    int userInput = 0;
+    bool needsInput = true;
+
+    printf("Hello, dear user!\n");
+    while (needsInput) {
+        getSaveIntValue(&userInput, "If you want to use existing file enter 1 over-vise 0 \n");
+        if (userInput == 1) {
+            // TODO: implement reading file
+            printf("Uooops, I can't\n");
+            needsInput = false;
+        } else if (userInput == 0){
+            char *fileName;
+            // TODO: check if it works correct
+            if (getSaveStingValue(&fileName)) return 0;
+            createFile(table, fileName);
+            free(fileName);
+            needsInput = false;
+        }
+    } return 0;
+
+
+
+}
 
 int selectOperation(const char *commandsMessages[], int countOfMessages) {
     int userInput;
