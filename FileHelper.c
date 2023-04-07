@@ -1,9 +1,11 @@
+#include "externalTable/TableHelper.h"
 #include "FileHelper.h"
 #include "stdio.h"
 #include "errno.h"
+#include "string.h"
 
 int isDigit(char *text) {
-    int j;
+    size_t j;
     j = strlen(text);
     while (j--) {
         if (text[j] > 47 && text[j] < 58) continue;
@@ -21,7 +23,7 @@ int readFile(char *fileName, char **outputString) {
     filePath = strcat(filePath, fileName);
 
     if ((fp = fopen(filePath, "r+")) == NULL) {
-        throughException(NO_SUCH_FILE);
+        throughException(NO_SUCH_FILE_EXCEPTION);
         return 0;
     }
 
@@ -69,7 +71,7 @@ int getTableFromString(char *inputString, Table *table) {
         strBuf = strtok(NULL, ";");
     }
     freeTable(table);
-    *table = initLocaleTable(MAX_TABLE_SIZE);
+    *table = initTable(NULL);
     int key, release, data;
 
     for (int i = 0; i < countOfLines; i++) {
@@ -79,7 +81,7 @@ int getTableFromString(char *inputString, Table *table) {
         while (strBuf != NULL) {
             // printf("col count %d, value %s\n", columnCounter, strBuf);
             if (!isDigit(strBuf) || strcmp("", strBuf) == 0) {
-                throughException(INCORRECT_FILE_FORMAT);
+                throughException(INCORRECT_FILE_FORMAT_EXCEPTION);
                 for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
                 free(linesArray);
                 free(inputString);
@@ -99,7 +101,7 @@ int getTableFromString(char *inputString, Table *table) {
                     break;
                 }
                 default: {
-                    throughException(INCORRECT_FILE_FORMAT);
+                    throughException(INCORRECT_FILE_FORMAT_EXCEPTION);
                     for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
                     free(linesArray);
                     free(inputString);
@@ -110,7 +112,7 @@ int getTableFromString(char *inputString, Table *table) {
             strBuf = strtok(NULL, ",");
         }
         if (columnCounter > 3) {
-            throughException(INCORRECT_FILE_FORMAT);
+            throughException(INCORRECT_FILE_FORMAT_EXCEPTION);
             for (int i = 0; i < countOfLines; ++i) free(linesArray[i]);
             free(linesArray);
             free(inputString);

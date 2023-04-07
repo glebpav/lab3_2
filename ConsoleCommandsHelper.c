@@ -2,7 +2,7 @@
 #include "string.h"
 #include "stdlib.h"
 #include "ConsoleCommandsHelper.h"
-#include "ExceptionsHandler.h"
+#include "ResponsesHandler.h"
 #include "FileHelper.h"
 #include "externalTable/TableHelper.h"
 
@@ -56,7 +56,7 @@ int getSaveIntValue(int *value, char *messageToUser) {
         // puts(repeatMessage);
         res = getInt(value);
         if (res == 0) {
-            throughException(NOT_INT_VALUE);
+            throughException(NOT_INT_VALUE_EXCEPTION);
         } else if (res == EOF) {
             return 0;
         }
@@ -65,9 +65,10 @@ int getSaveIntValue(int *value, char *messageToUser) {
     return res;
 }
 
-int getSaveStingValue(char **value) {
-    value = getLine();
-    return value == NULL ? 0 : 1;
+int getSaveStingValue(char **value, char *messageToUser) {
+    printf("%s", messageToUser);
+    *value = getLine();
+    return value == NULL ? COMMON_EXCEPTION : SUCCESS_RESPONSE;
 }
 
 int exitProgram(Table *table) {
@@ -89,16 +90,17 @@ int addElement(Table *inputTable) {
 }
 
 int findElementByKeyAndVersion(Table *inputTable) {
-    int key, version;
+    /*int key, version;
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
     if (!getSaveIntValue(&version, "Please, input VERSION\n"))
         return exitProgram(inputTable);
 
-    Table newTable = initLocaleTable(MAX_TABLE_SIZE);
+
+    //Table newTable = initLocaleTable(MAX_TABLE_SIZE);
     int res = findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
     printTable(&newTable);
-    if (res) freeTable(&newTable);
+    if (res) freeTable(&newTable);*/
 }
 
 int deleteElement(Table *inputTable) {
@@ -106,7 +108,7 @@ int deleteElement(Table *inputTable) {
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
     if (!deleteElementByKey(inputTable, key))
-        throughException(UNKNOWN_KEY);
+        throughException(UNKNOWN_KEY_EXCEPTION);
     return 1;
 }
 
@@ -115,7 +117,7 @@ int deleteOldVersionsWithKey(Table *inputTable) {
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
     if (!updateElementsWithKey(inputTable, key))
-        throughException(UNKNOWN_KEY);
+        throughException(UNKNOWN_KEY_EXCEPTION);
     return 1;
 }
 
@@ -127,26 +129,26 @@ int printTable(Table *table) {
     }
 
     printf("\nCurren state of table:\n");
-    printf("┌──────────────────────┐\n");
-    printf("│ %s │ %s │ %s │\n", "KEY", "RELEASE", "DATA");
-    printf("│─────┼─────────┼──────│\n");
+    printf("------------------------\n");
+    printf("| %s | %s | %s |\n", "KEY","RELEASE", "DATA");
+    printf("------------------------\n");
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];
-        printf("│ %.*d │ %.*d │ %.*d │\n", 3, item.key, 7, item.release, 4, item.info->data);
+        printf("| %.*d | %.*d | %.*d |\n", 3, item.key, 7, item.release, 4, item.info->data);
     }
-    printf("└──────────────────────┘\n");
+    printf("------------------------\n");
     return 1;
 }
 
 int findElementByKey(Table *inputTable) {
-    int key;
+    /*int key;
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
 
     Table newTable = initLocaleTable(MAX_TABLE_SIZE);
     int res = findRowsWithKey(inputTable, key, &newTable);
     printTable(&newTable);
-    if (res) freeTable(&newTable);
+    if (res) freeTable(&newTable);*/
     return 1;
 }
 

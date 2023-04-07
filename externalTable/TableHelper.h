@@ -2,6 +2,7 @@
 #define LAB3_2_TABLEHELPER_H
 
 #include <stdio.h>
+#include "../ResponsesHandler.h"
 
 typedef struct Item {
     int data;
@@ -30,8 +31,11 @@ int findRowsWithKeyAndVersion(Table *inputTable, int key, int version, Table *ne
 int deleteElementByKey(Table *table, int key);
 int updateElementsWithKey(Table *table, int key);
 
-int loadTable(Table *table, char *fileName);
+ResponsesTypes loadTable(Table *table, char *fileName);
 int createFile(Table *table, char *fileName);
 int saveTable(Table *table);
+
+ResponsesTypes readKeys(Table *table);
+ResponsesTypes writeNewRow(Table *table, KeySpace row);
 
 #endif //LAB3_2_TABLEHELPER_H

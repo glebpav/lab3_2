@@ -9,7 +9,7 @@
 
 int getSaveIntValue(int *value, char *messageToUser);
 
-int getSaveStingValue(char **value);
+int getSaveStingValue(char **value, char *messageToUser);
 
 int getInt(int *var);
 

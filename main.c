@@ -14,6 +14,7 @@ int main() {
         operation = selectOperation(commandsMessages, countOfCommands);
         operationResponse = commandsPointers[operation](&table);
     } while (operation && operationResponse);
+    freeTable(&table);
 
     return 0;
 }
