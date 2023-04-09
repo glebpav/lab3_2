@@ -2,7 +2,7 @@
 #include "DialogHelper.h"
 #include "ConsoleCommandsHelper.h"
 
-// gcc main.c -o main ConsoleCommandsHelper.c DialogHelper.c ExceptionsHandler.c FileHelper.c localeTable/TableHelper.c
+// gcc main.c -o main ConsoleCommandsHelper.c DialogHelper.c ExceptionsHandler.c FileHelper.c localeTable/TableHelper.c utils.c
 
 int main() {
 
@@ -14,7 +14,7 @@ int main() {
         operation = selectOperation(commandsMessages, countOfCommands);
         operationResponse = commandsPointers[operation](&table);
     } while (operation && operationResponse);
-    freeTable(&table);
+    destroyTable(&table);
 
     return 0;
 }

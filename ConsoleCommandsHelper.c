@@ -6,9 +6,6 @@
 #include "FileHelper.h"
 #include "externalTable/TableHelper.h"
 
-// Why you cannot return fixed size / const array in C?
-// https://stackoverflow.com/questions/29088462/why-you-cannot-return-fixed-size-const-array-in-c
-
 char *getLine(void) {
     char *line = malloc(100), *linep = line;
     size_t lenmax = 100, len = lenmax;
@@ -72,7 +69,7 @@ int getSaveStingValue(char **value, char *messageToUser) {
 }
 
 int exitProgram(Table *table) {
-    freeTable(table);
+    destroyTable(table);
     printf("%s\n", "Goodbye, dear!");
     return 0;
 }
@@ -100,7 +97,7 @@ int findElementByKeyAndVersion(Table *inputTable) {
     //Table newTable = initLocaleTable(MAX_TABLE_SIZE);
     int res = findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
     printTable(&newTable);
-    if (res) freeTable(&newTable);*/
+    if (res) destroyTable(&newTable);*/
 }
 
 int deleteElement(Table *inputTable) {
@@ -123,20 +120,23 @@ int deleteOldVersionsWithKey(Table *inputTable) {
 
 int printTable(Table *table) {
 
+
     if (table->tableSize == 0) {
         printf("Table is empty\n");
         return 1;
     }
 
     printf("\nCurren state of table:\n");
-    printf("------------------------\n");
+    printf("*----------------------*\n");
     printf("| %s | %s | %s |\n", "KEY","RELEASE", "DATA");
-    printf("------------------------\n");
+    printf("*-----*---------*------*\n");
+
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];
         printf("| %.*d | %.*d | %.*d |\n", 3, item.key, 7, item.release, 4, item.info->data);
     }
-    printf("------------------------\n");
+
+    printf("*----------------------*\n");
     return 1;
 }
 
@@ -148,7 +148,7 @@ int findElementByKey(Table *inputTable) {
     Table newTable = initLocaleTable(MAX_TABLE_SIZE);
     int res = findRowsWithKey(inputTable, key, &newTable);
     printTable(&newTable);
-    if (res) freeTable(&newTable);*/
+    if (res) destroyTable(&newTable);*/
     return 1;
 }
 

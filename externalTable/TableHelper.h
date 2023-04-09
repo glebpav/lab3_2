@@ -23,16 +23,18 @@ typedef struct Table {
 } Table;
 
 Table initTable(FILE *file);
+void destroyTable(Table *table);
+ResponsesTypes freeTable(Table *table);
 
-void freeTable(Table *table);
 int inputNewRow(Table *table, int key, int value);
 int findRowsWithKey(Table *inputTable, int key, Table *outTable);
 int findRowsWithKeyAndVersion(Table *inputTable, int key, int version, Table *newTable);
 int deleteElementByKey(Table *table, int key);
 int updateElementsWithKey(Table *table, int key);
 
-ResponsesTypes loadTable(Table *table, char *fileName);
-int createFile(Table *table, char *fileName);
+ResponsesTypes loadTable(Table *table, char **fileName);
+ResponsesTypes readTable(Table *table, bool firstTime);
+ResponsesTypes createFile(Table *table, char **fileName);
 int saveTable(Table *table);
 
 ResponsesTypes readKeys(Table *table);

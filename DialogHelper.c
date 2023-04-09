@@ -8,9 +8,10 @@
 
 int presettingProgram(Table *table) {
 
+    ResponsesTypes response;
     int userInput = 0;
     bool needsInput = true;
-    char *fileName;
+    char *fileName = NULL;
 
     printf("Hello, dear user!\n");
     while (needsInput) {
@@ -18,34 +19,31 @@ int presettingProgram(Table *table) {
         if (!getSaveIntValue(&userInput, "If you want to use existing file enter 1 over-vise 0 \n"))
             return 0;
 
-
-        // TODO: check if it works correct
-        ResponsesTypes responce = getSaveStingValue(&fileName, "Please enter name of bin file:\n");
-        if (isException(responce)) {
-            throughException(responce);
+        response = getSaveStingValue(&fileName, "Please enter name of bin file:\n");
+        if (isException(response)) {
+            throughException(response);
             return 0;
         }
 
         if (userInput == 1) {
-            // TODO: implement reading file
-            responce = loadTable(table, fileName);
-            if (isException(responce)) {
-                throughException(responce);
+            response = loadTable(table, &fileName);
+            if (isException(response)) {
+                throughException(response);
             }
 
-            printf("address of keys array: %p\n", table->keySpace);
             printf("count of items: %d\n", table->tableSize);
             printf("max count of items: %d\n", table->maxTableSize);
 
             printTable(table);
+            freeTable(table);
 
             needsInput = false;
         } else if (userInput == 0) {
-            createFile(table, fileName);
+            createFile(table, &fileName);
             needsInput = false;
         }
     }
-    // free(fileName);
+    if (fileName != NULL) free(fileName);
     return 1;
 
 
