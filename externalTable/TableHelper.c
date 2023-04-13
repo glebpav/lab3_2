@@ -9,9 +9,10 @@ Table initTable(FILE *file) {
 }
 
 void destroyTable(Table *table) {
+    printf("destroyTable: called!\n");
     // for (int i = 0; i < table->tableSize; ++i) free(table->keySpace[i].info);
     if (table->keySpace != NULL) free(table->keySpace);
-    // if (table->file != NULL) fclose(table->file);
+    if (table->file != NULL) fclose(table->file);
 }
 
 ResponsesTypes freeTable(Table *table) {
@@ -22,6 +23,33 @@ ResponsesTypes freeTable(Table *table) {
         free(table->keySpace[i].info);
 
     return SUCCESS_RESPONSE;
+}
+
+ResponsesTypes copyRow(KeySpace *to, KeySpace *from) {
+    if (from == NULL || to == NULL) return COMMON_EXCEPTION;
+    to->info->data = from->info->data;
+    to->release = from->release;
+    to->offset = from->offset;
+    to->key = from->key;
+    return SUCCESS_RESPONSE;
+}
+
+void printPreloadedTable(Table *table) {
+    if (table->tableSize == 0)
+        printf("Table is empty\n");
+
+
+    printf("\nCurren state of table:\n");
+    printf("*----------------------*\n");
+    printf("| %s | %s | %s |\n", "KEY","RELEASE", "DATA");
+    printf("*-----*---------*------*\n");
+
+    for (int i = 0; i < table->tableSize; ++i) {
+        KeySpace item = table->keySpace[i];
+        printf("| %.*d | %.*d | %.*d |\n", 3, item.key, 7, item.release, 4, item.info->data);
+    }
+
+    printf("*----------------------*\n");
 }
 
 int inputNewRow(Table *table, int key, int value) {
@@ -40,102 +68,120 @@ int inputNewRow(Table *table, int key, int value) {
             lastVersionOfThisKey = item.release;
     }
 
-    Item info = {value};
-    KeySpace newRow = {key, lastVersionOfThisKey + 1, 0, &info};
+    Item *info = calloc(1, sizeof(Item));
+    KeySpace *newRow = calloc(1, sizeof(KeySpace));
+    newRow->info = info;
+    newRow->key = key;
+    newRow->release = lastVersionOfThisKey + 1;
+    newRow->offset = 0;
+
     writeNewRow(table, newRow);
 
-    // free(table->keySpace);
-
+    free(newRow);
+    free(info);
     return 1;
 }
 
 int findRowsWithKey(Table *inputTable, int key, Table *outTable) {
-    /*int count = 0;
+    int count = 0;
+    outTable->keySpace = NULL;
+    outTable->tableSize = 0;
+
+    readTable(inputTable, false);
     for (int i = 0; i < inputTable->tableSize; ++i) {
         KeySpace item = inputTable->keySpace[i];
         if (item.key == key) {
-
-            inputNewRow(outTable, item.key, item.data);
+            outTable->tableSize += 1;
+            outTable->keySpace = realloc(outTable->keySpace, outTable->tableSize * sizeof(KeySpace));
+            outTable->keySpace[count].info = calloc(1, sizeof(Item));
+            copyRow(&(outTable->keySpace[count]), &item);
             count += 1;
         }
     }
-    if (count == 0) return 0;*/
+    freeTable(inputTable);
+    if (count == 0) return 0;
     return 1;
 }
 
 int findRowsWithKeyAndVersion(Table *inputTable, int key, int version, Table *outTable) {
-    /*int count = 0;
+    int count = 0;
+    readTable(inputTable, false);
     for (int i = 0; i < inputTable->tableSize; ++i) {
         KeySpace item = inputTable->keySpace[i];
         if (item.key == key && item.release == version) {
-            inputNewRow(outTable, item.key, item.data);
+            outTable->tableSize += 1;
+            outTable->keySpace = realloc(outTable->keySpace, outTable->tableSize * sizeof(KeySpace));
+            outTable->keySpace[count].info = calloc(1, sizeof(Item));
+            copyRow(&(outTable->keySpace[count]), &item);
             count += 1;
         }
     }
-    if (count == 0) return 0;*/
+    freeTable(inputTable);
+    if (count == 0) return 0;
     return 1;
 }
 
 int deleteElementByKey(Table *table, int key) {
-    /*int count = 0;
+    int count = 0;
+    readTable(table, false);
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];
         if (item.key == key) {
             count += 1;
             printf("delete version = %d\n", item.release);
             if (i != table->tableSize - 1) {
-                table->keySpace[i].key = table->keySpace[table->tableSize - 1].key;
-                table->keySpace[i].release = table->keySpace[table->tableSize - 1].release;
-                table->keySpace[i].data = table->keySpace[table->tableSize - 1].data;
+                swapRows(table, i, table->tableSize - 1);
                 table->tableSize -= 1;
+                free(table->keySpace[table->tableSize].info);
+                fseek(table->file, sizeof(int) * 1, SEEK_SET);
+                fwrite(&(table->tableSize), sizeof(int), 1, table->file);
                 i -= 1;
             } else {
                 table->tableSize -= 1;
+                fseek(table->file, sizeof(int) * 1, SEEK_SET);
+                free(table->keySpace[table->tableSize].info);
+                fwrite(&(table->tableSize), sizeof(int), 1, table->file);
             }
         }
     }
-    if (count == 0) return 0;*/
+    freeTable(table);
+    if (count == 0) return 0;
     return 1;
 }
 
 int updateElementsWithKey(Table *table, int key) {
-    /*int latestVersion = -1;
+    int latestVersion = -1;
     int count = 0;
+    readTable(table, false);
     for (int i = table->tableSize - 1; i >= 0; --i) {
         KeySpace item = table->keySpace[i];
         if (item.key == key && latestVersion < item.release) latestVersion = item.release;
     }
+    if (latestVersion == -1) return 0;
     for (int i = 0; i < table->tableSize; ++i) {
         KeySpace item = table->keySpace[i];
         if (item.key == key && item.release != latestVersion) {
             count += 1;
             printf("delete version = %d\n", item.release);
             if (i != table->tableSize - 1) {
-                table->keySpace[i].key = table->keySpace[table->tableSize - 1].key;
-                table->keySpace[i].release = table->keySpace[table->tableSize - 1].release;
-                table->keySpace[i].data = table->keySpace[table->tableSize - 1].data;
+                swapRows(table, i, table->tableSize - 1);
                 table->tableSize -= 1;
+                free(table->keySpace[table->tableSize].info);
+                fseek(table->file, sizeof(int) * 1, SEEK_SET);
+                fwrite(&(table->tableSize), sizeof(int), 1, table->file);
                 i -= 1;
             } else {
                 table->tableSize -= 1;
+                fseek(table->file, sizeof(int) * 1, SEEK_SET);
+                free(table->keySpace[table->tableSize].info);
+                fwrite(&(table->tableSize), sizeof(int), 1, table->file);
             }
         }
     }
-    if (count == 0) return 0;*/
+
+    freeTable(table);
+    if (count == 0) return 0;
     return 1;
-}
-
-
-int insert(Table *table, int key, int version, int data) {
-    // if(find(*table, k) >= 0) return 1;
-    /*if (table->tableSize >= table->maxTableSize) return 2;
-    table->keySpace[table->tableSize].key = key;
-    table->keySpace[table->tableSize].release = version;
-    fseek(table->file, 0, SEEK_END);
-    table->keySpace[table->tableSize].offset = ftell(table->file);
-    fwrite(data, sizeof(char), table->keySpace[table->tableSize].len, table->file);
-    ++(table->tableSize);
-    return 0;*/
 }
 
 ResponsesTypes readTable(Table *table, bool firstTime) {
@@ -143,6 +189,7 @@ ResponsesTypes readTable(Table *table, bool firstTime) {
     if (table == NULL) return FILE_EXCEPTION;
     if (table->file == NULL) return FILE_EXCEPTION;
 
+    fseek(table->file, 0, SEEK_SET);
     // reading of max Table size
     fread(&table->maxTableSize, sizeof(int), 1, table->file);
     // reading of Table size
@@ -166,6 +213,8 @@ ResponsesTypes loadTable(Table *table, char **fileName) {
     response = getDirToFile(fileName);
     if (isException(response)) return response;
     table->file = fopen(*fileName, "r+b");
+    int i = 0;
+    fseek(table->file, 16, SEEK_SET);
     response = readTable(table, true);
     if (isException(response)) return response;
 
@@ -187,18 +236,10 @@ ResponsesTypes createFile(Table *table, char **fileName) {
     fwrite(&table->maxTableSize, sizeof(int), 1, table->file);
     fwrite(&table->tableSize, sizeof(int), 1, table->file);
     table->keySpace = calloc(table->maxTableSize, sizeof(KeySpace));
+    fwrite(table->keySpace, sizeof(KeySpace), table->maxTableSize, table->file);
+    printf("cursor position (after create table): %ld\n", ftell(table->file));
     return 1;
 }
-
-int saveTable(Table *table) {
-    fseek(table->file, sizeof(int), SEEK_SET);
-    fwrite(&table->tableSize, sizeof(int), 1, table->file);
-    fwrite(table->keySpace, sizeof(KeySpace), table->tableSize, table->file);
-    fclose(table->file);
-    table->file = NULL;
-    return 1;
-}
-
 
 ResponsesTypes readKeys(Table *table) {
     if (table->file == NULL) return FILE_EXCEPTION;
@@ -212,7 +253,7 @@ ResponsesTypes readKeys(Table *table) {
     return SUCCESS_RESPONSE;
 }
 
-ResponsesTypes writeNewRow(Table *table, KeySpace row) {
+ResponsesTypes writeNewRow(Table *table, KeySpace *row) {
     if (table == NULL) return COMMON_EXCEPTION;
     if (table->file == NULL) return FILE_EXCEPTION;
     if (table->maxTableSize == 0) return COMMON_EXCEPTION;
@@ -220,7 +261,7 @@ ResponsesTypes writeNewRow(Table *table, KeySpace row) {
 
     long newKeysOffset = sizeof(int) * 2 + sizeof(KeySpace) * table->tableSize;
     long newItemOffset = sizeof(int) * 2 + sizeof(KeySpace) * table->maxTableSize + sizeof(Item) * table->tableSize;
-    row.offset = newItemOffset;
+    row->offset = newItemOffset;
     table->tableSize += 1;
 
     // rewrite table size
@@ -229,10 +270,59 @@ ResponsesTypes writeNewRow(Table *table, KeySpace row) {
 
     // write new key
     fseek(table->file, newKeysOffset, SEEK_SET);
-    fwrite(&row, sizeof(KeySpace), 1, table->file);
-
+    // printf("from here\n");
+    fwrite(row, sizeof(KeySpace), 1, table->file);
+    // printf("from here2\n");
     // write new data
+    // Item *initedItem = calloc(1, sizeof(Item));
+    // memset(initedItem, 0, sizeof(Item));
+    // initedItem->data = row.info->data;
     fseek(table->file, newItemOffset, SEEK_SET);
-    fwrite(row.info, sizeof(Item), 1, table->file);
+
+    // printf("new Item Offset: %ld\n", newItemOffset);
+    // printf("cursor position (after fseek): %ld\n", ftell(table->file));
+
+    fwrite(row->info, sizeof(Item), 1, table->file);
+    return SUCCESS_RESPONSE;
+}
+
+ResponsesTypes swapRows(Table *table, int swappingIdx1, int swappingIdx2) {
+    if (table == NULL) return COMMON_EXCEPTION;
+    if (table->file == NULL) return FILE_EXCEPTION;
+    if (table->maxTableSize == 0) return COMMON_EXCEPTION;
+
+    long keysOffset1 = sizeof(int) * 2 + sizeof(KeySpace) * swappingIdx1;
+    long keysOffset2 = sizeof(int) * 2 + sizeof(KeySpace) * swappingIdx2;
+
+    long itemOffset1 = sizeof(int) * 2 + sizeof(KeySpace) * table->maxTableSize + sizeof(Item) * swappingIdx1;
+    long itemOffset2 = sizeof(int) * 2 + sizeof(KeySpace) * table->maxTableSize + sizeof(Item) * swappingIdx2;
+
+    KeySpace *row1 = calloc(1, sizeof(KeySpace));
+    KeySpace *row2 = calloc(1, sizeof(KeySpace));
+    row1->info = calloc(1, sizeof(Item));
+    row2->info = calloc(1, sizeof(Item));
+
+    copyRow(row1, &(table->keySpace[swappingIdx1]));
+    copyRow(row2, &(table->keySpace[swappingIdx2]));
+
+    fseek(table->file, keysOffset1, SEEK_SET);
+    fwrite(row2, sizeof(KeySpace), 1, table->file);
+
+    fseek(table->file, keysOffset2, SEEK_SET);
+    fwrite(row1, sizeof(KeySpace), 1, table->file);
+
+    fseek(table->file, itemOffset1, SEEK_SET);
+    fwrite(row2->info, sizeof(Item), 1, table->file);
+
+    fseek(table->file, itemOffset2, SEEK_SET);
+    fwrite(row1->info, sizeof(Item), 1, table->file);
+
+    copyRow(&(table->keySpace[swappingIdx1]), row2);
+    copyRow(&(table->keySpace[swappingIdx2]), row1);
+
+    free(row1->info);
+    free(row2->info);
+    free(row1);
+    free(row2);
     return SUCCESS_RESPONSE;
 }

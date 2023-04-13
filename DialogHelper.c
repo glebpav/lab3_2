@@ -34,9 +34,8 @@ int presettingProgram(Table *table) {
             printf("count of items: %d\n", table->tableSize);
             printf("max count of items: %d\n", table->maxTableSize);
 
-            printTable(table);
+            printPreloadedTable(table);
             freeTable(table);
-
             needsInput = false;
         } else if (userInput == 0) {
             createFile(table, &fileName);

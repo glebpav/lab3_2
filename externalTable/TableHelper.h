@@ -25,6 +25,8 @@ typedef struct Table {
 Table initTable(FILE *file);
 void destroyTable(Table *table);
 ResponsesTypes freeTable(Table *table);
+ResponsesTypes copyRow(KeySpace *to, KeySpace *from);
+void printPreloadedTable(Table *table);
 
 int inputNewRow(Table *table, int key, int value);
 int findRowsWithKey(Table *inputTable, int key, Table *outTable);
@@ -38,6 +40,7 @@ ResponsesTypes createFile(Table *table, char **fileName);
 int saveTable(Table *table);
 
 ResponsesTypes readKeys(Table *table);
-ResponsesTypes writeNewRow(Table *table, KeySpace row);
+ResponsesTypes writeNewRow(Table *table, KeySpace *row);
+ResponsesTypes swapRows(Table *table, int swappingIdx1, int swappingIdx2);
 
 #endif //LAB3_2_TABLEHELPER_H

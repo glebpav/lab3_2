@@ -69,7 +69,7 @@ int getSaveStingValue(char **value, char *messageToUser) {
 }
 
 int exitProgram(Table *table) {
-    destroyTable(table);
+    //  destroyTable(table);
     printf("%s\n", "Goodbye, dear!");
     return 0;
 }
@@ -87,17 +87,20 @@ int addElement(Table *inputTable) {
 }
 
 int findElementByKeyAndVersion(Table *inputTable) {
-    /*int key, version;
+    int key, version;
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
     if (!getSaveIntValue(&version, "Please, input VERSION\n"))
         return exitProgram(inputTable);
 
 
-    //Table newTable = initLocaleTable(MAX_TABLE_SIZE);
+    Table newTable = initTable(NULL);
     int res = findRowsWithKeyAndVersion(inputTable, key, version, &newTable);
-    printTable(&newTable);
-    if (res) destroyTable(&newTable);*/
+    printPreloadedTable(&newTable);
+    freeTable(&newTable);
+    if (res) destroyTable(&newTable);
+
+    return 1;
 }
 
 int deleteElement(Table *inputTable) {
@@ -120,35 +123,24 @@ int deleteOldVersionsWithKey(Table *inputTable) {
 
 int printTable(Table *table) {
 
+    readTable(table, false);
+    printPreloadedTable(table);
+    freeTable(table);
 
-    if (table->tableSize == 0) {
-        printf("Table is empty\n");
-        return 1;
-    }
-
-    printf("\nCurren state of table:\n");
-    printf("*----------------------*\n");
-    printf("| %s | %s | %s |\n", "KEY","RELEASE", "DATA");
-    printf("*-----*---------*------*\n");
-
-    for (int i = 0; i < table->tableSize; ++i) {
-        KeySpace item = table->keySpace[i];
-        printf("| %.*d | %.*d | %.*d |\n", 3, item.key, 7, item.release, 4, item.info->data);
-    }
-
-    printf("*----------------------*\n");
     return 1;
 }
 
 int findElementByKey(Table *inputTable) {
-    /*int key;
+    int key;
     if (!getSaveIntValue(&key, "Please, input KEY\n"))
         return exitProgram(inputTable);
 
-    Table newTable = initLocaleTable(MAX_TABLE_SIZE);
+    Table newTable = initTable(NULL);
     int res = findRowsWithKey(inputTable, key, &newTable);
-    printTable(&newTable);
-    if (res) destroyTable(&newTable);*/
+    printPreloadedTable(&newTable);
+    freeTable(&newTable);
+    if (res) destroyTable(&newTable);
+
     return 1;
 }
 
